@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# Copyright (c) 2011, Eugene Ciurana (pr3d4t0r)
+# Copyright (c) 2011, 2015 by Eugene Ciurana (pr3d4t0r)
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -34,111 +34,92 @@
 # Eugene Ciurana        ipwhere AT ciurana.eu         pr3d4t0r
 # Daniel Stenberg       daniel AT haxx.se
 
-
-import ConfigParser
-import os.path
-import urllib
-import urllib2
+import json
+import os
 import socket
 import sys
+import urllib2
 
 
 # *** Symbolic constants ***
 
+IPWHERE_API_KEY = os.getenv(u'IPWHERE_API_KEY')
 IPWHERE_HTTP_OK = 200 # HTTP OK
 IPWHERE_INVALID = 999 # Something wrong with the URI request
-IPWHERE_VERSION = '1.0'
-IPWHERE_UA      = 'ipwhere/'+IPWHERE_VERSION+' ('+sys.platform+')'
 
-# Geobytes API URI:
-GEOBYTES_API          = 'http://www.geobytes.com/IpLocator.htm?'
-GEOBYTES_TAG_NAME     = 0x01
-GEOBYTES_TAG_VALUE    = 0X03
+IPWHERE_VERSION = u'1.1'
+IPWHERE_UA      = u'ipwhere/'+IPWHERE_VERSION+' ('+sys.platform+')'
+
+# IPInfoDB API URI:
+IPINFODB_URI=u'http://api.ipinfodb.com/v3/ip-city/'
 
 
 # *** Implementation ***
 
 def helpUser():
-  print('Invalid arguments list - syntax:')
-  print('ipwhere ip.add.re.ss\n')
-  print('ip.add.re.ss is an octet-format IPv4 address.  It may also be a host name.')
-  exit(0x01)
+  print(u'Invalid arguments list - syntax:')
+  print(u'ipwhere ip.add.re.ss\n')
+  print(u'ip.add.re.ss is an octet-format IPv4 address.  It may also be a host name.')
 
+  if IPWHERE_API_KEY is None:
+    print(u'\nThe required IPWHERE_API_KEY environment variable is not defined.')
+    print(u'Get a free API key from http://www.ipinfodb.com/ip_location_api_json.php')
 
-# This method uses urllib2 for Jython compatibility.
+  exit(1)
+
 
 def fetchLocationData(address = None):
-  argList = 'GetLocation&'+urllib.urlencode(
-      { 'template'    : 'php3.txt',
-        'IpAddress'   : address })
+    request = u'%s?key=%s&ip=%s&format=json' % (IPINFODB_URI, IPWHERE_API_KEY, address)
 
-  try:
-    request = urllib2.Request(GEOBYTES_API, argList, { 'User-Agent': IPWHERE_UA })
-    input   = urllib2.urlopen(request)
-    payload = input.read()
-    nStatus = input.code
-    input.close()
-  except:
-    nStatus = IPWHERE_INVALID
-    payload = None
-
-  return nStatus, payload
+    try:
+        input   = urllib2.urlopen(request)
+        payload = input.read()
+        status = input.code
+        input.close()
+    except:
+        status = IPWHERE_INVALID
+        payload = None
+  
+    return status, payload
 
 
-def convertToTags(rawData, address):
-  lines = [ line for line in rawData.split('\n') if 'meta' in line ]
-  data  = [ data.split('"') for data in lines ]
-  tags  = dict()
+def displayResultsIn(rawLocationData):
+    locationData = json.loads(rawLocationData)
+    reverseDNS   = socket.gethostbyaddr(locationData[u'ipAddress'])
 
-  tags['address'] = address
-
-  for datum in data:
-    tags[datum[GEOBYTES_TAG_NAME]] = datum[GEOBYTES_TAG_VALUE]
-
-  try:
-    tags['rdns'] = socket.gethostbyaddr(address)[0x00]
-  except:
-    tags['rdns'] = address
-
-  return tags
+    print(u'%s - %s (%s) is in %s, %s, %s' % (
+        sys.argv[1],
+        locationData[u'ipAddress'],
+        reverseDNS[0],
+        locationData[u'cityName'],
+        locationData[u'regionName'],
+        locationData[u'countryCode'] ))
 
 
-def validateTags():
-  if tags['known'] != 'true':
-    print('Invalid request; bad IP address or host name?')
-    exit(0x02)
-
-
-def displayResults():
-  if tags['city'] != 'Limit Exceeded':
-    print(tags['address']+' - '+tags['rdns']+' is in '+tags['city']+', '+tags['regioncode']+', '+tags['iso2']+' ['+tags['certainty']+'%]')
-  else:
-    print('More than 20 requests made this hour - try again later (fall back to local cache?)')
-    exit(0x03)
+def displayErrorIn(rawLocationData, status):
+    if rawLocationData is not None:
+        locationData = json.loads(rawLocationData)
+        print(u'error processing your request - HTTP response = %d, %s' % (status, locationData[u'statusMessage']))
+    else:
+        print(u'error processing your request - HTTP response = %d' % status)
 
 
 def _main():
-  global tags
+    if len(sys.argv) < 2 or IPWHERE_API_KEY is None:
+      helpUser()
 
-  if len(sys.argv) < 0x02:
-    helpUser()
+    status, rawLocationData = fetchLocationData(sys.argv[1])
 
-  nStatus, rawLocationData = fetchLocationData(sys.argv[0x01])
-
-  if nStatus is IPWHERE_HTTP_OK:
-    tags = convertToTags(rawLocationData, sys.argv[0x01])
-
-    validateTags()
-    displayResults()
-
-  else:
-    print('Error processing your request - HTTP response = %d' % nStatus)
-    helpUser()
+    if status is IPWHERE_HTTP_OK:
+        displayResultsIn(rawLocationData)
+    else:
+        displayErrorIn(rawLocationData, status)
+        helpUser()
 
 
 # *** main ***
 
-if __name__ == '__main__':
+if __name__ == u'__main__':
   try:
     _main()
   except KeyboardInterrupt:
