@@ -83,14 +83,22 @@ def fetchLocationData(address = None):
     return status, payload
 
 
+def reverseDNSOf(location):
+    try:
+        hostInfo = socket.gethostbyaddr(location)
+    except Exception as e:
+        hostInfo = ((u'rDNS failed = %s' % e), None, None)
+
+    return hostInfo[0]
+
+
 def displayResultsIn(rawLocationData):
     locationData = json.loads(rawLocationData)
-    reverseDNS   = socket.gethostbyaddr(locationData[u'ipAddress'])
 
     print(u'%s - %s (%s) is in %s, %s, %s' % (
         sys.argv[1],
         locationData[u'ipAddress'],
-        reverseDNS[0],
+        reverseDNSOf(locationData[u'ipAddress']),
         locationData[u'cityName'],
         locationData[u'regionName'],
         locationData[u'countryCode'] ))
