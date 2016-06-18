@@ -47,7 +47,7 @@ IPWHERE_API_KEY = os.getenv(u'IPWHERE_API_KEY')
 IPWHERE_HTTP_OK = 200 # HTTP OK
 IPWHERE_INVALID = 999 # Something wrong with the URI request
 
-IPWHERE_VERSION = u'1.1'
+IPWHERE_VERSION = u'1.2'
 IPWHERE_UA      = u'ipwhere/'+IPWHERE_VERSION+' ('+sys.platform+')'
 
 # IPInfoDB API URI:
