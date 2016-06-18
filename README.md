@@ -40,3 +40,7 @@ implementation.
 *   Change provider from geobytes.com to IPInfoDB; Unicode/UTF-8 strings
 *   Improved rDNS search and put it in a separate method
 
+### 1.2
+
+*   Improved exception handling and HTTP status reporting
+
