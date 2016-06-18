@@ -74,11 +74,16 @@ def fetchLocationData(address = None):
     try:
         input   = urllib2.urlopen(request)
         payload = input.read()
-        status = input.code
+        status  = input.code
         input.close()
-    except:
-        status = IPWHERE_INVALID
+    except Exception as e:
+        print("request = %s" % request)
         payload = None
+
+        if e.code:
+            status = e.code
+        else:
+            status = IPWHERE_INVALID
   
     return status, payload
 
@@ -122,7 +127,8 @@ def _main():
         displayResultsIn(rawLocationData)
     else:
         displayErrorIn(rawLocationData, status)
-        helpUser()
+        if status == IPWHERE_INVALID:
+            helpUser()
 
 
 # *** main ***
