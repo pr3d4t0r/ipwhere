@@ -34,6 +34,9 @@
 # Eugene Ciurana        ipwhere AT ciurana.eu         pr3d4t0r
 # Daniel Stenberg       daniel AT haxx.se
 
+
+from urllib2 import HTTPError
+
 import json
 import os
 import socket
@@ -70,20 +73,21 @@ def helpUser():
 
 def fetchLocationData(address = None):
     request = u'%s?key=%s&ip=%s&format=json' % (IPINFODB_URI, IPWHERE_API_KEY, address)
+    payload = None
 
     try:
         input   = urllib2.urlopen(request)
         payload = input.read()
         status  = input.code
         input.close()
-    except Exception as e:
-        print("request = %s" % request)
-        payload = None
-
-        if e.code:
-            status = e.code
-        else:
-            status = IPWHERE_INVALID
+    except HTTPError as e:
+        status  = e.code
+        print(e.headers)
+    except Exception:
+        status = IPWHERE_INVALID
+        print(e)
+    finally:
+        print("error request = %s" % request)
   
     return status, payload
 
