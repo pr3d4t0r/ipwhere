@@ -47,8 +47,8 @@ import urllib2
 # *** Symbolic constants ***
 
 IPWHERE_API_KEY = os.getenv(u'IPWHERE_API_KEY')
-IPWHERE_HTTP_OK = 200 # HTTP OK
-IPWHERE_INVALID = 999 # Something wrong with the URI request
+IPWHERE_HTTP_OK = 200       # HTTP OK
+IPWHERE_INVALID = 999       # Something wrong with the URI request
 
 IPWHERE_VERSION = u'1.2'
 IPWHERE_UA      = u'ipwhere/'+IPWHERE_VERSION+' ('+sys.platform+')'
@@ -82,12 +82,12 @@ def fetchLocationData(address = None):
         input.close()
     except HTTPError as e:
         status  = e.code
+        print("request = %s" % request)
         print(e.headers)
     except Exception:
         status = IPWHERE_INVALID
+        print("request = %s" % request)
         print(e)
-    finally:
-        print("error request = %s" % request)
   
     return status, payload
 
