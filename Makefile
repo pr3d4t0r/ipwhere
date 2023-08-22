@@ -72,7 +72,7 @@ nuke: ALWAYS
 # See:  https://blog.ganssle.io/articles/2021/10/setup-py-deprecated.html
 package:
 	pip install -r $(REQUIREMENTS)
-	python setup.py bdist_wheel
+	python -m build
 
 
 # The publish: target is for PyPI, not for the devpi server.
