@@ -29,9 +29,8 @@ readme = "README.md"
 requires-python = ">=3.9.9"
 
 
-# [project.scripts]
-# triplchk = "ipwhere.healthmonitor:main"
-# triplwhoami="ipwhere.selfie:main"
+[project.scripts]
+ipwhere = "ipwhere:_main"
 
 
 [tool.pytest.ini_options]
