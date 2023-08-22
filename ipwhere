@@ -1,6 +1,6 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
-# Copyright (c) 2011-2016 by Eugene Ciurana (pr3d4t0r)
+# Copyright (c) 2011-2016, 2023 by Eugene Ciurana (pr3d4t0r)
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -35,60 +35,77 @@
 # Daniel Stenberg       daniel AT haxx.se
 
 
-from urllib2 import HTTPError
+from urllib.request import HTTPError
 
 import json
 import os
 import socket
 import sys
-import urllib2
+import urllib.parse
+import urllib.request
 
 
 # *** Symbolic constants ***
 
-IPWHERE_API_KEY = os.getenv(u'IPWHERE_API_KEY')
+IPWHERE_API_KEY = os.getenv('IPWHERE_API_KEY')
 IPWHERE_HTTP_OK = 200       # HTTP OK
 IPWHERE_INVALID = 999       # Something wrong with the URI request
 
-IPWHERE_VERSION = u'1.2'
-IPWHERE_UA      = u'ipwhere/'+IPWHERE_VERSION+' ('+sys.platform+')'
+IPWHERE_VERSION = '1.2'
+IPWHERE_UA      = 'ipwhere/'+IPWHERE_VERSION+' ('+sys.platform+')'
 
 # IPInfoDB API URI:
-IPINFODB_URI=u'http://api.ipinfodb.com/v3/ip-city/'
+IPINFODB_URI='http://api.ip2location.io'
 
 
 # *** Implementation ***
 
 def helpUser():
-  print(u'Invalid arguments list - syntax:')
-  print(u'ipwhere ip.add.re.ss\n')
-  print(u'ip.add.re.ss is an octet-format IPv4 address.  It may also be a host name.')
+  print('Invalid arguments list - syntax:')
+  print('ipwhere ip.add.re.ss\n')
+  print('ip.add.re.ss is an octet-format IPv4 address.  It may also be a host name.')
 
   if IPWHERE_API_KEY is None:
-    print(u'\nThe required IPWHERE_API_KEY environment variable is not defined.')
-    print(u'Get a free API key from http://www.ipinfodb.com/ip_location_api_json.php')
+    print('\nThe required IPWHERE_API_KEY environment variable is not defined.')
+    print('Get a free API key from http://www.ipinfodb.com/ip_location_api_json.php')
 
   exit(1)
 
 
+def die(message, exitCode):
+    print(message)
+    sys.exit(exitCode)
+
+
 def fetchLocationData(address = None):
-    request = u'%s?key=%s&ip=%s&format=json' % (IPINFODB_URI, IPWHERE_API_KEY, address)
+    query = {
+        'ip': address,
+        'key': IPWHERE_API_KEY,
+    }
+    request = urllib.request.Request(
+        IPINFODB_URI+'/?'+urllib.parse.urlencode(query),
+        headers = {
+            'Content-Type': 'application/json',
+            'User-Agent': '	Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:109.0) Gecko/20100101 Firefox/116.0',
+        },
+        method = 'GET',
+    )
     payload = None
 
     try:
-        input   = urllib2.urlopen(request)
+        input   = urllib.request.urlopen(request)
         payload = input.read()
         status  = input.code
         input.close()
     except HTTPError as e:
         status  = e.code
         print("request = %s" % request)
-        print(e.headers)
-    except Exception:
+        die(e.headers, 1)
+    except Exception as e:
         status = IPWHERE_INVALID
         print("request = %s" % request)
-        print(e)
-  
+        die(e, 2)
+
     return status, payload
 
 
@@ -96,7 +113,7 @@ def reverseDNSOf(location):
     try:
         hostInfo = socket.gethostbyaddr(location)
     except Exception as e:
-        hostInfo = ((u'rDNS failed = %s' % e), None, None)
+        hostInfo = (('rDNS failed = %s' % e), None, None)
 
     return hostInfo[0]
 
@@ -104,21 +121,21 @@ def reverseDNSOf(location):
 def displayResultsIn(rawLocationData):
     locationData = json.loads(rawLocationData)
 
-    print(u'%s - %s (%s) is in %s, %s, %s' % (
+    print('%s - %s (%s) is in %s, %s, %s' % (
         sys.argv[1],
-        locationData[u'ipAddress'],
-        reverseDNSOf(locationData[u'ipAddress']),
-        locationData[u'cityName'],
-        locationData[u'regionName'],
-        locationData[u'countryCode'] ))
+        locationData['ip'],
+        reverseDNSOf(locationData['ip']),
+        locationData['city_name'],
+        locationData['region_name'],
+        locationData['country_code'] ))
 
 
 def displayErrorIn(rawLocationData, status):
     if rawLocationData is not None:
         locationData = json.loads(rawLocationData)
-        print(u'error processing your request - HTTP response = %d, %s' % (status, locationData[u'statusMessage']))
+        print('error processing your request - HTTP response = %d, %s' % (status, locationData['statusMessage']))
     else:
-        print(u'error processing your request - HTTP response = %d' % status)
+        print('error processing your request - HTTP response = %d' % status)
 
 
 def _main():
@@ -137,7 +154,7 @@ def _main():
 
 # *** main ***
 
-if __name__ == u'__main__':
+if __name__ == '__main__':
   try:
     _main()
   except KeyboardInterrupt:
