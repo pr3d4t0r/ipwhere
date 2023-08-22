@@ -1,0 +1,4 @@
+appdirs
+click
+psutil
+pyperclip
