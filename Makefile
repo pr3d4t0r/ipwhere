@@ -105,8 +105,7 @@ test: ALWAYS
 	@echo "Version = $(VERSION)"
 	pip install -r requirements.txt
 	pip install -e .
-	pytest -v ./tests/ipwhere-test.py
-	pytest -v ./tests/launchd-test.py
+	pytest -v ./tests/test_ipwhere.py
 	pip uninstall -y $(PACKAGE)==$(VERSION) || true
 	rm -Rfv $$(find ipwhere/ | awk '/__pycache__$$/')
 	rm -Rfv $$(find tests | awk '/__pycache__$$/')
