@@ -69,10 +69,10 @@ nuke: ALWAYS
 	make clean
 
 
-# See:  https://blog.ganssle.io/articles/2021/10/setup-py-deprecated.html
+# Reference:  https://setuptools.pypa.io/en/latest/userguide/index.html
 package:
 	pip install -r $(REQUIREMENTS)
-	python -m build
+	python -m build --wheel
 
 
 # The publish: target is for PyPI, not for the devpi server.

@@ -23,6 +23,7 @@ dynamic = [
     "dependencies",
     "version",
 ]
+license = { text = 'BSD-3-Clause' }
 name = "ipwhere"  # $(PACKAGE) and package.txt
 readme = "README.md"
 requires-python = ">=3.9.9"
