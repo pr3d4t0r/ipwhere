@@ -69,6 +69,7 @@ nuke: ALWAYS
 	make clean
 
 
+# See:  https://blog.ganssle.io/articles/2021/10/setup-py-deprecated.html
 package:
 	pip install -r $(REQUIREMENTS)
 	python setup.py bdist_wheel
