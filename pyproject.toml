@@ -1,12 +1,8 @@
 [build-system]
 requires = [ "setuptools" ]
 build-backend = "setuptools.build_meta"
-
-
 [metadata]
 url = "https://github.com/pr3d4t0r/ipwhere"
-
-
 [project]
 authors = [
     {name = "Eugene Ciurana pr3d4t0r", email = "ipwhere.project@cime.net" }
@@ -27,27 +23,19 @@ license = { text = 'BSD-3-Clause' }
 name = "ipwhere"  # $(PACKAGE) and package.txt
 readme = "README.md"
 requires-python = ">=3.9.9"
-
-
 [project.scripts]
 ipwhere = "ipwhere:_main"
-
-
 [tool.pytest.ini_options]
 addopts = "-sv"
 testpaths = [
     "tests"
 ]
-
-
 [tool.setuptools]
 include-package-data = true
 packages = [
     "ipwhere",
     # "tests", # because test modules import objects from other test modules
 ]
-
-
 [tool.setuptools.dynamic]
 dependencies = { file = "requirements.txt" }
 version = { attr = "ipwhere.__VERSION__" }

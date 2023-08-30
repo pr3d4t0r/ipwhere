@@ -9,8 +9,9 @@ will use a free service or list.
 
 ## API key required
 
-The program uses IP2Location for resolving locations.  They provide a free
-service, just ask you to register so that they can give you a unique API key.
+The program uses ipstack.io for resolving locations.  They provide a free
+service that requires an API key and grants up to 1,000 HTTP requests per
+calendar month.
 
 The API key is defined as an environment variable:
 
@@ -21,19 +22,17 @@ IPWHERE_API_KEY=your-API-key-here
 ipwhere won't start if the environment variable isn't defined.
 
 
-### Getting an IP2Location API Key
+### Getting an ipstack.io API key
 
-Head to http://www.ip2location.io, sign up to the service and follow the
-instructions.  API keys are free for the first 30,000 requests.  They take up to
-10 minutes to be activated.
+Head to https://ipstack.io, sign up to the service and follow the
+instructions.  Activation and usage are immediate.
 
 
 ### Query Frequency
 
-IP2Location is a free service, but require that API requests are spaced about 2
-seconds apart to lighten their server load.  If possible, use local caching as
-well.
+If possible, use local caching as well.  This will help you extend the number of
+monthly requests beyond the 1,000 limit imposed by ipstack.io.
 
-ipwhere makes a single query per call, so no attempt at pacing is done in this
-implementation.
+ipwhere makes a single query per call.  Future versions may implement local
+caching to `/tmp` or similar.
 

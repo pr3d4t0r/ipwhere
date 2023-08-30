@@ -1,6 +1,6 @@
 
 
-__VERSION__ = "2.0.1"
+__VERSION__ = "2.0.2"
 
 
 # +++ implementation +++
@@ -25,7 +25,7 @@ IPWHERE_VERSION = '1.2'
 IPWHERE_UA      = 'ipwhere/'+IPWHERE_VERSION+' ('+sys.platform+')'
 
 # IPInfoDB API URI:
-IPINFODB_URI='http://api.ip2location.io'
+IPINFODB_URI='http://api.ipstack.com'
 
 
 # *** Implementation ***
@@ -51,13 +51,13 @@ def die(message, exitCode, unitTest = False):
 
 def fetchLocationData(address = None):
     query = {
-        'ip': address,
-        'key': IPWHERE_API_KEY,
+        'access_key': IPWHERE_API_KEY,
     }
     request = urllib.request.Request(
-        IPINFODB_URI+'/?'+urllib.parse.urlencode(query),
+        # IPINFODB_URI+'/?'+urllib.parse.urlencode(query),
+        '/'.join([ IPINFODB_URI, address, ])+'?'+urllib.parse.urlencode(query),
         headers = {
-            'Content-Type': 'application/json',
+#             'Content-Type': 'application/json',
             'User-Agent': '	Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:109.0) Gecko/20100101 Firefox/116.0',
         },
         method = 'GET',
@@ -65,6 +65,8 @@ def fetchLocationData(address = None):
     payload = None
 
     try:
+        x = request.full_url
+        print(request.full_url)
         input   = urllib.request.urlopen(request)
         payload = input.read()
         status  = input.code

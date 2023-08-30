@@ -50,3 +50,6 @@ def test_displayResultsIn():
 def test_displayErrorIn():
     pass
 
+
+test_fetchLocationData()
+
