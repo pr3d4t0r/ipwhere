@@ -1,6 +1,6 @@
 
 
-__VERSION__ = "2.0.2"
+__VERSION__ = "2.0.3"
 
 
 # +++ implementation +++
@@ -17,7 +17,6 @@ import urllib.request
 
 # *** Symbolic constants ***
 
-IPWHERE_API_KEY = os.getenv('IPWHERE_API_KEY')
 IPWHERE_HTTP_OK = 200       # HTTP OK
 IPWHERE_INVALID = 999       # Something wrong with the URI request
 
@@ -35,10 +34,6 @@ def helpUser(unitTest = False):
     print('Invalid arguments list - syntax:')
     print('ipwhere ip.add.re.ss\n')
     print('ip.add.re.ss is an octet-format IPv4 address.  It may also be a host name.')
-
-    if IPWHERE_API_KEY is None:
-        print('\nThe required IPWHERE_API_KEY environment variable is not defined.')
-        print('Get a free API key from http://www.ipinfodb.com/ip_location_api_json.php')
 
     exit(1)
 
@@ -112,7 +107,7 @@ def displayErrorIn(locationData, status):
 
 
 def _main():
-    if len(sys.argv) < 2 or IPWHERE_API_KEY is None:
+    if len(sys.argv) < 2:
       helpUser()
 
     status, locationData = fetchLocationData(sys.argv[1])
