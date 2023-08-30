@@ -3,35 +3,21 @@
 IP geo location command line tool (relies on 3rd-party to provide actual
 location).
 
-The current supported provider for ipwhere is IP2Location.io - a future version
-will use a free service or list.
+Unlike with previous versions **`ipwhere` does not require an API key starting
+on version 2.0.2.**
 
 
-## API key required
+## No API key required
 
-The program uses ipstack.io for resolving locations.  They provide a free
-service that requires an API key and grants up to 1,000 HTTP requests per
-calendar month.
-
-The API key is defined as an environment variable:
-
-```bash
-IPWHERE_API_KEY=your-API-key-here
-```
-
-ipwhere won't start if the environment variable isn't defined.
-
-
-### Getting an ipstack.io API key
-
-Head to https://ipstack.io, sign up to the service and follow the
-instructions.  Activation and usage are immediate.
+`ipwhere` uses https://ip-api.com for resolving locations.  They provide a free
+service that does not require an API key and grants up to 45 requests per minute
+from a given IP address.
 
 
 ### Query Frequency
 
 If possible, use local caching as well.  This will help you extend the number of
-monthly requests beyond the 1,000 limit imposed by ipstack.io.
+requests per minute from `ipwhere`.
 
 ipwhere makes a single query per call.  Future versions may implement local
 caching to `/tmp` or similar.
