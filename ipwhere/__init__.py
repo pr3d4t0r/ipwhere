@@ -1,6 +1,6 @@
 
 
-__VERSION__ = "2.0.1"
+__VERSION__ = "2.0.2"
 
 
 # +++ implementation +++
@@ -25,7 +25,7 @@ IPWHERE_VERSION = '1.2'
 IPWHERE_UA      = 'ipwhere/'+IPWHERE_VERSION+' ('+sys.platform+')'
 
 # IPInfoDB API URI:
-IPINFODB_URI='http://api.ip2location.io'
+IPINFODB_URI='http://ip-api.com/json'
 
 
 # *** Implementation ***
@@ -50,15 +50,12 @@ def die(message, exitCode, unitTest = False):
 
 
 def fetchLocationData(address = None):
-    query = {
-        'ip': address,
-        'key': IPWHERE_API_KEY,
-    }
     request = urllib.request.Request(
-        IPINFODB_URI+'/?'+urllib.parse.urlencode(query),
+        '/'.join([ IPINFODB_URI, address, ]),
         headers = {
             'Content-Type': 'application/json',
-            'User-Agent': '	Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:109.0) Gecko/20100101 Firefox/116.0',
+            # 'User-Agent': '	Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:109.0) Gecko/20100101 Firefox/116.0',
+            'User-Agent': IPWHERE_UA,
         },
         method = 'GET',
     )
@@ -94,12 +91,12 @@ def reverseDNSOf(location):
 
 def displayResultsIn(locationData, unitTest = False):
     output = '%s - %s (%s) is in %s, %s, %s' % (
-        locationData['ip'] if unitTest else sys.argv[1],
-        locationData['ip'],
-        reverseDNSOf(locationData['ip']),
-        locationData['city_name'],
-        locationData['region_name'],
-        locationData['country_code'] )
+        locationData['query'] if unitTest else sys.argv[1],
+        locationData['query'],
+        reverseDNSOf(locationData['query']),
+        locationData['city'],
+        locationData['regionName'],
+        locationData['countryCode'] )
 
     if not unitTest:
         print(output)

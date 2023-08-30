@@ -8,8 +8,8 @@ from ipwhere import reverseDNSOf
 
 # +++ constants +++
 
-TEST_IP = '1.1.1.1'
-TEST_RDNS = 'one.one.one.one'
+TEST_IP = '8.8.8.8'
+TEST_RDNS = 'dns.google'
 
 
 # +++ globals +++
@@ -32,7 +32,7 @@ def test_fetchLocationData():
     status, _locationData = fetchLocationData(TEST_IP)
 
     assert status == 200
-    assert _locationData['country_code'] == 'US'
+    assert _locationData['countryCode'] == 'US'
 
 
 def test_reverseDNSOf():
